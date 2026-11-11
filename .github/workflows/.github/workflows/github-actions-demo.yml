@@ -1,0 +1,38 @@
+name: test
+
+on: 
+  push: 
+    branches: [main]
+    paths-ignore: [.github/**]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '15 6 * * 0'
+  workflow_dispatch:
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "🎉 The job was triggered by event: ${{ github.event_name }}"
+          echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ."
+
+      - uses: actions/checkout@v3.3.0
+
+      - name: List files in the repository
+        run: |
+          echo "The repository ${{ github.repository }} contains the following files:"
+          tree
+
+      - name: Test Log Levels
+        run: |
+          echo "::warning file=app.js, line=10:: This is a code warning."
+          echo "::error file=app.js, line=15, col=5::Error"
+      
+      - name: Generate Value
+        id: generator
+        run: echo "build_id = 12345" >> $GITHUB_OUTPUT
+      
+      - name: Use Value
+        run: echo "The build ID is ${{ steps.generator.outputs.build_id }}"
